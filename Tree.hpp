@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <queue>
+#include <SFML/Graphics.hpp>
 
 #include "TreeIterators.hpp"
 
@@ -19,14 +20,47 @@ namespace myTree{
     /**
      * An abstract class that represent a tree.
      * will be extended to binary tree and K-ary tree.
+     * in this class we implemented a drawing function using the SFML library, usage in main(): tree.render(window, 0, 0, 100, 100);
      */
     template <typename T, size_t K>
     class BaseTree{
         protected:
             shared_ptr<Node<T>> root;
+
+            // drawing the tree using the SFML library:
+            void drawTree(shared_ptr<Node<T>> node, sf::RenderWindow& window, float x, float y, float xSpacing, float ySpacing){
+                if(node == nullptr){
+                    return;
+                }
+                sf::CircleShape circle(20);
+                circle.setFillColor(sf::Color::White);
+                circle.setOutlineThickness(2);
+                circle.setOutlineColor(sf::Color::Black);
+                circle.setPosition(x, y);
+                window.draw(circle);
+                sf::Text text(to_string(node->getValue()), sf::Font(), 20);
+                text.setPosition(x + 5, y + 5);
+                window.draw(text);
+                vector<shared_ptr<Node<T>>> children = node->getChildren();
+                for(int i = 0; i < children.size(); i++){
+                    sf::Vertex line[] = {
+                        sf::Vertex(sf::Vector2f(x + 20, y + 20)),
+                        sf::Vertex(sf::Vector2f(x + xSpacing + 20, y + ySpacing + 20))
+                    };
+                    window.draw(line, 2, sf::Lines);
+                    drawTree(children[i], window, x + xSpacing, y + ySpacing, xSpacing, ySpacing);
+                    x += xSpacing;
+                }
+            }
+
+
         public:
             BaseTree() : root(nullptr){}  // constructor.
             BaseTree(shared_ptr<Node<T>> root) : root(root){}  // constructor.
+
+            ~BaseTree(){}  // destructor.
+
+            virtual void pureVirtual() = 0; // pure virtual function.
 
             bool addRoot(shared_ptr<Node<T>> root, bool override = false){  // add a root to the tree.
                 if(this->root != nullptr && !override){
@@ -83,7 +117,10 @@ namespace myTree{
                 return DFSIterator<T>(nullptr);
             }
 
-            virtual void pureVirtual() = 0; // pure virtual function.
+            // function to render the tree using the SFML library:
+            void render(sf::RenderWindow& window, float x, float y, float xSpacing, float ySpacing){
+                drawTree(this->root, window, x, y, xSpacing, ySpacing);
+            }
     };
 
     /**
@@ -130,6 +167,15 @@ namespace myTree{
             PostorderIterator<T> endPostorder(){
                 PostorderIterator<T> it(this->root); // Initialize with root
                 it.setToEnd(); // A method in PostorderIterator to set index to postorderNodes.size()
+                return it;
+            }
+
+            HeapIterator<T> beginHeap(){
+                return HeapIterator<T>(this->root);
+            }
+            HeapIterator<T> endHeap(){
+                HeapIterator<T> it;
+                it.setToEnd();
                 return it;
             }
     };

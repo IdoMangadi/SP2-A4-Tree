@@ -226,6 +226,61 @@ namespace myTree {
             return !nodeStack.empty() || !other.nodeStack.empty();
         }
     };
+
+    /**
+     * HeapIterator class.
+     * this class will be used to iterate over a binary tree and return the values in a minimum heap order.
+     */
+    template<typename T>
+    class HeapIterator {
+        private:
+            
+            vector<T> heap;
+            size_t index = 0; // Current position in the heap
+
+            void buildHeap(shared_ptr<Node<T>> root) {
+                if (!root) return;
+                
+                // putt all the nodes in the tree in the heap vector.
+                for(auto it = DFSIterator<T>(root); it != DFSIterator<T>(nullptr); ++it){
+                    heap.push_back(*it);
+                }
+
+                make_heap(heap.begin(), heap.end(), less<T>());  // make the heap.
+                sort_heap(heap.begin(), heap.end(), less<T>());  // Sort the heap for consistent iteration.
+            }
+
+        public:
+            HeapIterator(shared_ptr<Node<T>> root) {
+                buildHeap(root);
+            }
+
+            T& operator*() {
+                if (index < heap.size()) {
+                    return heap[index];
+                }
+                throw std::out_of_range("HeapIterator dereference out of range");
+            }
+
+            HeapIterator& operator++() {
+                if (index < heap.size()) index++;
+                return *this;
+            }
+
+            bool operator!=(const HeapIterator& other) const {
+                // Since we're comparing to the end iterator, which has a nullptr root,
+                // we can simply check if the current index is at the end of the heap vector.
+                return index != heap.size();
+            }
+
+            // Assuming end iterator is created with a default constructor or nullptr root
+            HeapIterator() : index(0) {}
+
+            // Helper function to set index for the end iterator
+            void setToEnd() {
+                index = heap.size();
+            }
+    };
     
 
 } // namespace myTree

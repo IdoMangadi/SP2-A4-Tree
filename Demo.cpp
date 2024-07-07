@@ -68,6 +68,12 @@ int main(){
     }
     cout << endl;
 
+    cout << "Heap traversal:" << endl;  // should print: 1 2 3 4 5 6 7 8 9
+    for(auto it = tree.beginHeap(); it != tree.endHeap(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
     // creating 3-ary tree:
     Tree<int, 3> tree3;
     shared_ptr<Node<int>> root3 = make_shared<Node<int>>(1);
