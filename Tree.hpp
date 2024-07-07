@@ -1,7 +1,14 @@
+// ID: 315310250
+// EMAIL: IDOIZHAR.Mangadi@msmail.ariel.ac.il
+// GMAIL: idomangadi@gmail.com
+
+#ifndef TREE_HPP
+#define TREE_HPP
 
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <queue>
 
 #include "TreeIterators.hpp"
 
@@ -10,59 +17,123 @@ using namespace std;
 namespace myTree{
 
     /**
-     * class representing a node of the tree.
-     * the node contaion value (can be primitive or object) and a vector of children.
+     * An abstract class that represent a tree.
+     * will be extended to binary tree and K-ary tree.
      */
-    template <typename T>
-    class Node{
+    template <typename T, size_t K>
+    class BaseTree{
+        protected:
+            shared_ptr<Node<T>> root;
         public:
-            T value;  // value of the node.
-            vector<shared_ptr<Node<T>>> children;  // children of the node.
-            Node(T value);  // constructor.
-            bool addChild(T value);  // add a child to the node.
-            bool addChild(shared_ptr<Node<T>> node);  // add a child to the node.
+            BaseTree() : root(nullptr){}  // constructor.
+            BaseTree(shared_ptr<Node<T>> root) : root(root){}  // constructor.
 
-            friend ostream& operator<<(ostream& os, Node<T> node);  // overloading iostram operator for the node:
-            string to_string();  // to_string method: 
+            bool addRoot(shared_ptr<Node<T>> root, bool override = false){  // add a root to the tree.
+                if(this->root != nullptr && !override){
+                    return false;
+                }
+                this->root = root;
+                return true;
+            }
+            
+            shared_ptr<Node<T>> getRoot(){  // return the root of the tree.
+                return this->root;
+            }
+
+            bool addSubNode(shared_ptr<Node<T>> parent, shared_ptr<Node<T>> child){  // add a child to a parent node.
+                if(parent == nullptr || child == nullptr || parent == child || parent->getChildren().size() >= K){
+                    return false;
+                }
+                return parent->addChild(child);
+            }
+
+            // iterators (for the pre/in/post order we will travers the tree using the DFS iterator).
+            DFSIterator<T> beginPreorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endPreorder(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            DFSIterator<T> beginInorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endInorder(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            DFSIterator<T> beginPostorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endPostorder(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            BFSIterator<T> beginBFS(){
+                return BFSIterator<T>(this->root);
+            }
+            BFSIterator<T> endBFS(){
+                return BFSIterator<T>(nullptr);
+            }
+
+            DFSIterator<T> beginDFS(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endDFS(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            virtual void pureVirtual() = 0; // pure virtual function.
     };
 
     /**
-     * class representing a tree.
-     * the tree contain a root node.
+     * this class represent a K-ary tree.
+     */
+    template <typename T, size_t K = 2>
+    class Tree : public BaseTree<T, K>{
+        public:
+            Tree() : BaseTree<T, K>(){}  // constructor.
+            Tree(shared_ptr<Node<T>> root) : BaseTree<T, K>(root){}  // constructor.
+
+            void pureVirtual() override{}  // overriding the pure virtual function.
+    };
+
+    /**
+     * this class represent a binary tree.
      */
     template <typename T>
-    class Tree{
-        private:
-            shared_ptr<Node<T>> root;  // root node of the tree.
-            size_t k;  // number of children for each node.
+    class Tree<T, 2> : public BaseTree<T, 2>{
         public:
-            /**
-             * constructor.
-             */
-            Tree(size_t k);
-            /**
-             * default constructor (crate a binary tree).
-             */
-            Tree(); 
-            /**
-             * add a root to the tree.
-             */
-            bool addRoot(T value);
-            bool addRoot(shared_ptr<Node<T>> node, bool attachChildren);  // (in case the tree is not empty the method will replace the root)
+            Tree() : BaseTree<T, 2>(){}  // constructor.
+            Tree(shared_ptr<Node<T>> root) : BaseTree<T, 2>(root){}  // constructor.
 
-            bool addSubNode(shared_ptr<Node<T>> parent, shared_ptr<Node<T>> newChild);  // add a child to a given node.
+            void pureVirtual() override{}  // overriding the pure virtual function.
 
-            // iterators:
-            PreorderIterator<T> beginPreorder();
-            PreorderIterator<T> endPreorder();
-            InorderIterator<T> beginInorder();
-            InorderIterator<T> endInorder();
-            PostorderIterator<T> beginPostorder();
-            PostorderIterator<T> endPostorder();
-            BFSIterator<T> beginBFS();
-            BFSIterator<T> endBFS();
-            DFSIterator<T> beginDFS();
-            DFSIterator<T> endDFS();
+            // iterators (can use the pre/in/post order iterators).
+            PreorderIterator<T> beginPreorder(){
+                return PreorderIterator<T>(this->root);
+            }
+            PreorderIterator<T> endPreorder(){
+                return PreorderIterator<T>(nullptr);
+            }
+
+            InorderIterator<T> beginInorder(){
+                return InorderIterator<T>(this->root);
+            }
+            InorderIterator<T> endInorder(){
+                return InorderIterator<T>(nullptr);
+            }
+
+            PostorderIterator<T> beginPostorder(){
+                return PostorderIterator<T>(this->root);
+            }
+            PostorderIterator<T> endPostorder(){
+                PostorderIterator<T> it(this->root); // Initialize with root
+                it.setToEnd(); // A method in PostorderIterator to set index to postorderNodes.size()
+                return it;
+            }
     };
 
 } // namespace myTree
+
+#endif // TREE_HPP
