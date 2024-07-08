@@ -39,6 +39,7 @@ namespace myTree{
             }
 
             bool addChild(shared_ptr<Node<T>> node){  // add a child to the node.
+                if(node == nullptr) return false;
                 this->children.push_back(node);
                 return true;
             }

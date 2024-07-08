@@ -6,17 +6,21 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Werror -Wsign-conversion
 VALGRIND_FLAGS = -v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
+SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 SOURCES = Complex.cpp Demo.cpp
 OBJECTS = Complex.o Demo.o
-TOBJECTS = Complex.o test.o
+TOBJECTS = Complex.o test.o testCounter.o
 
 .PHONY: all clean valgrind cps run_test test
 
 all: tree test
 
-tree: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@
+tree: Demo
+	./Demo
+
+Demo: $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) $(SFML_FLAGS) -o $@
 
 run_test: test
 	./test
@@ -24,7 +28,16 @@ run_test: test
 test: $(TOBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o test
 
-%.o: %.cpp
+Complex.o: Complex.cpp Complex.hpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+Demo.o: Demo.cpp Node.hpp Tree.hpp TreeIterators.hpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+test.o: Test.cpp Complex.hpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+testCounter.o: TestCounter.cpp Complex.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 valgrind: tree test

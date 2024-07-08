@@ -6,13 +6,14 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 #include "Tree.hpp"
-#include "TreeIterators.hpp"
 #include "Complex.hpp"
 
 using namespace std;
 using namespace myTree;
+using namespace myComplex;
 
 int main(){
 
@@ -37,6 +38,8 @@ int main(){
     tree.addSubNode(rightChild, rightRightChild);
     tree.addSubNode(leftLeftChild, leftLeftLeftChild);
     tree.addSubNode(leftLeftChild, leftLeftRightChild);
+
+    tree.renderTree();
 
     cout << "Preorder traversal:" << endl;  // should print: 1 2 4 8 9 5 3 6 7
     for(auto it = tree.beginPreorder(); it != tree.endPreorder(); ++it){
@@ -74,6 +77,7 @@ int main(){
     }
     cout << endl;
 
+    // NOTE: for non-binary trees. there is no heap traversal and for preorder, inorder and postorder traversals we will use the DFS iterator.
     // creating 3-ary tree:
     Tree<int, 3> tree3;
     shared_ptr<Node<int>> root3 = make_shared<Node<int>>(1);
@@ -104,6 +108,8 @@ int main(){
     tree3.addSubNode(rightChild3, rightMiddleChild3);
     tree3.addSubNode(rightChild3, rightRightChild3);
 
+    tree3.renderTree();
+
     cout << "Preorder traversal:" << endl;  // should print: 1 2 5 6 7 3 8 9 10 4 11 12 13
     for(auto it = tree3.beginPreorder(); it != tree3.endPreorder(); ++it){
         cout << *it << " ";
@@ -130,6 +136,123 @@ int main(){
 
     cout << "DFS traversal:" << endl;  // should print: 1 2 5 6 7 3 8 9 10 4 11 12 13
     for(auto it = tree3.beginDFS(); it != tree3.endDFS(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    // creating 4-ary tree:
+    auto root4 = make_shared<Node<int>>(1);  // create a root node.
+    auto tree4 = make_shared<Tree<int, 4>>(root4);  // create a tree with the root node.
+
+    auto child1 = make_shared<Node<int>>(2);
+    auto child2 = make_shared<Node<int>>(3);
+    auto child3 = make_shared<Node<int>>(4);
+    auto child4 = make_shared<Node<int>>(5);
+    tree4->addSubNode(root4, child1);
+    tree4->addSubNode(root4, child2);
+    tree4->addSubNode(root4, child3);
+    tree4->addSubNode(root4, child4);
+
+    auto child5 = make_shared<Node<int>>(6);
+    auto child6 = make_shared<Node<int>>(7);
+    auto child7 = make_shared<Node<int>>(8);
+    auto child8 = make_shared<Node<int>>(9);
+    tree4->addSubNode(child1, child5);
+    tree4->addSubNode(child1, child6);
+    tree4->addSubNode(child1, child7);
+    tree4->addSubNode(child1, child8);
+
+    auto child9 = make_shared<Node<int>>(10);
+    auto child10 = make_shared<Node<int>>(11);
+    auto child11 = make_shared<Node<int>>(12);
+    auto child12 = make_shared<Node<int>>(13);
+    tree4->addSubNode(child2, child9);
+    tree4->addSubNode(child2, child10);
+    tree4->addSubNode(child2, child11);
+    tree4->addSubNode(child2, child12);
+
+    tree4->renderTree();
+
+    cout << "Preorder traversal:" << endl;  // should print: 1 2 6 7 8 9 3 10 11 12 13 4 5
+    for(auto it = tree4->beginPreorder(); it != tree4->endPreorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << "Inorder traversal:" << endl;  // should print: 1 2 6 7 8 9 3 10 11 12 13 4 5
+    for(auto it = tree4->beginInorder(); it != tree4->endInorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+    
+    cout << "postorder traversal:" << endl;  // should print: 1 2 6 7 8 9 3 10 11 12 13 4 5
+    for(auto it = tree4->beginPostorder(); it != tree4->endPostorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout<< "BFS traversal:" << endl;  // should print: 1 2 3 4 5 6 7 8 9 10 11 12 13
+    for(auto it = tree4->beginBFS(); it != tree4->endBFS(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << "DFS traversal:" << endl;  // should print: 1 2 6 7 8 9 3 10 11 12 13 4 5
+    for(auto it = tree4->beginDFS(); it != tree4->endDFS(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    // creating a tree of complex numbers:
+    Tree<Complex> treeComplex;
+    shared_ptr<Node<Complex>> rootComplex = make_shared<Node<Complex>>(Complex(1, 2));
+    shared_ptr<Node<Complex>> leftChildComplex = make_shared<Node<Complex>>(Complex(3, 4));
+    shared_ptr<Node<Complex>> rightChildComplex = make_shared<Node<Complex>>(Complex(5, 6));
+    shared_ptr<Node<Complex>> leftLeftChildComplex = make_shared<Node<Complex>>(Complex(7, 8));
+    shared_ptr<Node<Complex>> leftRightChildComplex = make_shared<Node<Complex>>(Complex(9, 10));
+    shared_ptr<Node<Complex>> rightLeftChildComplex = make_shared<Node<Complex>>(Complex(11, 12));
+    shared_ptr<Node<Complex>> rightRightChildComplex = make_shared<Node<Complex>>(Complex(13, 14));
+    shared_ptr<Node<Complex>> leftLeftLeftChildComplex = make_shared<Node<Complex>>(Complex(15, 16));
+    shared_ptr<Node<Complex>> leftLeftRightChildComplex = make_shared<Node<Complex>>(Complex(17, 18));
+
+    treeComplex.addRoot(rootComplex, true);
+    treeComplex.addSubNode(rootComplex, leftChildComplex);
+    treeComplex.addSubNode(rootComplex, rightChildComplex);
+    treeComplex.addSubNode(leftChildComplex, leftLeftChildComplex);
+    treeComplex.addSubNode(leftChildComplex, leftRightChildComplex);
+    treeComplex.addSubNode(rightChildComplex, rightLeftChildComplex);
+    treeComplex.addSubNode(rightChildComplex, rightRightChildComplex);
+    treeComplex.addSubNode(leftLeftChildComplex, leftLeftLeftChildComplex);
+    treeComplex.addSubNode(leftLeftChildComplex, leftLeftRightChildComplex);
+
+    treeComplex.renderTree();
+
+    cout << "Preorder traversal:" << endl;  // should print: 1 + 2i 3 + 4i 7 + 8i 15 + 16i 17 + 18i 9 + 10i 5 + 6i 11 + 12i 13 + 14i
+    for(auto it = treeComplex.beginPreorder(); it != treeComplex.endPreorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << "Inorder traversal:" << endl;  // should print: 15 + 16i 7 + 8i 17 + 18i 3 + 4i 9 + 10i 1 + 2i 5 + 6i 11 + 12i 13 + 14i
+    for(auto it = treeComplex.beginInorder(); it != treeComplex.endInorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << "postorder traversal:" << endl;  // should print: 15 + 16i 17 + 18i 7 + 8i 9 + 10i 4 + 3i 11 + 12i 14 + 13i 6 + 5i 2 + 1i
+    for(auto it = treeComplex.beginPostorder(); it != treeComplex.endPostorder(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+    
+    cout<< "BFS traversal:" << endl;  // should print: 1 + 2i 3 + 4i 5 + 6i 7 + 8i 9 + 10i 11 + 12i 13 + 14i 15 + 16i 17 + 18i
+    for(auto it = treeComplex.beginBFS(); it != treeComplex.endBFS(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    cout << "DFS traversal:" << endl;  // should print: 1 + 2i 3 + 4i 7 + 8i 15 + 16i 17 + 18i 9 + 10i 5 + 6i 11 + 12i 13 + 14i
+    for(auto it = treeComplex.beginDFS(); it != treeComplex.endDFS(); ++it){
         cout << *it << " ";
     }
     cout << endl;

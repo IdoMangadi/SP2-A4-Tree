@@ -30,6 +30,10 @@ namespace myTree {
                 return nodeStack.top()->getValue();
             }
 
+            Node<T>* operator->() {  // returning the node.
+                return nodeStack.top().get();
+            }
+
             PreorderIterator& operator++() {  // increment operator.
             shared_ptr<Node<T>> node = nodeStack.top();
             nodeStack.pop();
@@ -42,7 +46,7 @@ namespace myTree {
             return *this;
         }
 
-            bool operator!=(const PreorderIterator& other) {  // not equal operator.
+            bool operator!=(const PreorderIterator& other) const{  // not equal operator.
                 return this->nodeStack.size() != other.nodeStack.size();
             }
     };
@@ -76,6 +80,10 @@ namespace myTree {
             return nodeStack.top()->getValue();
         }
 
+        Node<T>* operator->() {  // returning the node.
+            return nodeStack.top().get();
+        }
+
         InorderIterator& operator++() {  // increment operator.
             shared_ptr<Node<T>> node = nodeStack.top();
             nodeStack.pop();
@@ -85,7 +93,7 @@ namespace myTree {
             return *this;
         }
 
-        bool operator!=(const InorderIterator& other) const {  // not equal operator.
+        bool operator!=(const InorderIterator& other) const{  // not equal operator.
             // This might not be the correct way to compare iterators.
             // Consider comparing the current node or using a sentinel value for the end.
             return !nodeStack.empty() || !other.nodeStack.empty();
@@ -144,12 +152,16 @@ namespace myTree {
                 return postorderNodes.at(index)->getValue();
             }
 
+            Node <T>* operator->() {  // returning the node.
+                return postorderNodes.at(index).get();
+            }
+
             PostorderIterator& operator++() {  // increment operator.
                 index++;
                 return *this;
             }
 
-            bool operator!=(const PostorderIterator& other) {  // not equal operator.
+            bool operator!=(const PostorderIterator& other) const{  // not equal operator.
                 return index != other.index;
             }
     };
@@ -174,6 +186,10 @@ namespace myTree {
                 return nodeQueue.front()->getValue();
             }
 
+            Node<T>* operator->() {  // returning the node.
+                return nodeQueue.front().get();
+            }
+
             BFSIterator& operator++() {  // increment operator.
                 shared_ptr<Node<T>> node = nodeQueue.front();
                 nodeQueue.pop();
@@ -183,7 +199,7 @@ namespace myTree {
                 return *this;
             }
 
-            bool operator!=(const BFSIterator& other) {  // not equal operator.
+            bool operator!=(const BFSIterator& other) const{  // not equal operator.
                 return nodeQueue.size() != other.nodeQueue.size();
             }
     };
@@ -208,6 +224,10 @@ namespace myTree {
             return nodeStack.top()->getValue();
         }
 
+        Node<T>* operator->() {  // Returning the node.
+            return nodeStack.top().get();
+        }
+
         DFSIterator& operator++() {  // Pre-increment operator.
             if (!nodeStack.empty()) {
                 shared_ptr<Node<T>> node = nodeStack.top();
@@ -220,7 +240,7 @@ namespace myTree {
             return *this;
         }
 
-        bool operator!=(const DFSIterator& other) const {  // Not equal operator.
+        bool operator!=(const DFSIterator& other) const{  // Not equal operator.
             // This is a simplistic way to compare iterators, which might not work in all cases.
             // A more robust implementation would be needed for a fully correct comparison.
             return !nodeStack.empty() || !other.nodeStack.empty();
@@ -267,7 +287,7 @@ namespace myTree {
                 return *this;
             }
 
-            bool operator!=(const HeapIterator& other) const {
+            bool operator!=(const HeapIterator& other) const{
                 // Since we're comparing to the end iterator, which has a nullptr root,
                 // we can simply check if the current index is at the end of the heap vector.
                 return index != heap.size();

@@ -17,19 +17,21 @@ namespace myComplex{
         
         public: 
             Complex(double real, double imag);
-            double getReal();
-            double getImag();
+            double getReal() const;
+            double getImag() const;
 
-            Complex operator+(Complex c2);
-            Complex operator-(Complex c2);
-            bool operator==(Complex c2);
-            bool operator!=(Complex c2);
-            bool operator<(Complex c2);
-            bool operator>(Complex c2);
-            bool operator<=(Complex c2);
-            bool operator>=(Complex c2);
+            Complex operator+(const Complex c2) const;
+            Complex operator-(const Complex c2) const;
+            Complex operator*(const Complex c2) const;
+            Complex operator/(const Complex c2) const;
+            bool operator==(const Complex& c2) const;
+            bool operator!=(const Complex c2) const;
+            bool operator<(const Complex c2) const;
+            bool operator>(const Complex c2) const;
+            bool operator<=(const Complex c2) const;
+            bool operator>=(const Complex c2) const;
 
-            friend ostream& operator<<(ostream& os, Complex c);
+            friend ostream& operator<<(ostream& os, const Complex c);
     };
 
 

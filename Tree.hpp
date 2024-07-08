@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <queue>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 
 #include "TreeIterators.hpp"
@@ -27,33 +28,67 @@ namespace myTree{
         protected:
             shared_ptr<Node<T>> root;
 
-            // drawing the tree using the SFML library:
-            void drawTree(shared_ptr<Node<T>> node, sf::RenderWindow& window, float x, float y, float xSpacing, float ySpacing){
-                if(node == nullptr){
+            /** 
+             * drawing the tree using the SFML library:
+             * @param window - the window to draw the tree on.
+             * @param node - the current node to draw.
+             * @param x - the x position of the node.
+             * @param y - the y position of the node.
+             * @param x_offset - the x offset between the nodes.
+             * @param y_offset - the y offset between the nodes.
+             * @param font - the font to use for the text.
+             * @param depth - the depth of the node in the tree.
+             */
+            void drawTree(sf::RenderWindow &window, shared_ptr<Node<T>> node, float x, float y, float x_offset, float y_offset, sf::Font &font, size_t depth = 0) {
+                if (node == nullptr)
                     return;
-                }
-                sf::CircleShape circle(20);
-                circle.setFillColor(sf::Color::White);
-                circle.setOutlineThickness(2);
-                circle.setOutlineColor(sf::Color::Black);
-                circle.setPosition(x, y);
-                window.draw(circle);
-                sf::Text text(to_string(node->getValue()), sf::Font(), 20);
-                text.setPosition(x + 5, y + 5);
-                window.draw(text);
-                vector<shared_ptr<Node<T>>> children = node->getChildren();
-                for(int i = 0; i < children.size(); i++){
+
+                float new_x_offset = x_offset / std::pow(K, depth);
+                float min_x_offset = 60.0f;
+                new_x_offset = std::max(new_x_offset, min_x_offset);
+
+                y_offset += depth * 2; // Increment y_offset slightly with depth to avoid overlap
+
+                // Scaling factor for ellipse and text size, decreases with depth
+                float scale_factor = std::max(0.5f, 1 - depth * 0.1f); // Ensure scale factor does not go below 0.5
+
+                for (auto i = 0u; i < node->getChildren().size(); ++i) {
+                    float new_x = x + (i - node->getChildren().size() / 2.0) * new_x_offset;
+                    float new_y = y + y_offset;
+
                     sf::Vertex line[] = {
-                        sf::Vertex(sf::Vector2f(x + 20, y + 20)),
-                        sf::Vertex(sf::Vector2f(x + xSpacing + 20, y + ySpacing + 20))
+                        sf::Vertex(sf::Vector2f(x + 25, y + 25)),
+                        sf::Vertex(sf::Vector2f(new_x + 25, new_y + 25), sf::Color(255, 140, 0))
                     };
                     window.draw(line, 2, sf::Lines);
-                    drawTree(children[i], window, x + xSpacing, y + ySpacing, xSpacing, ySpacing);
-                    x += xSpacing;
+
+                    // Recursive call with incremented depth
+                    drawTree(window, node->getChildren()[i], new_x, new_y, x_offset, y_offset, font, depth + 1);
                 }
+
+                // Apply scaling factor to ellipse size
+                sf::CircleShape ellipse(30 * scale_factor); // Adjust ellipse size based on depth
+                ellipse.setScale(1, 0.6);
+                ellipse.setFillColor(sf::Color(50, 50, 50));
+                ellipse.setOutlineColor(sf::Color(173, 216, 230));
+                ellipse.setOutlineThickness(2);
+                ellipse.setPosition(x, y);
+                window.draw(ellipse);
+
+                // Adjust text size based on depth
+                sf::Text text;
+                text.setFont(font);
+                std::ostringstream oss;
+                oss << node->getValue();
+                text.setString(oss.str());
+                text.setCharacterSize(14 * scale_factor); // Adjust text size based on depth
+                text.setFillColor(sf::Color::Yellow);
+                sf::FloatRect textRect = text.getLocalBounds();
+                text.setOrigin(textRect.width / 2, textRect.height / 2);
+                text.setPosition(x + 30 * scale_factor, y + 18 * scale_factor); // Adjust text position based on ellipse size
+                window.draw(text);
             }
-
-
+        
         public:
             BaseTree() : root(nullptr){}  // constructor.
             BaseTree(shared_ptr<Node<T>> root) : root(root){}  // constructor.
@@ -75,10 +110,14 @@ namespace myTree{
             }
 
             bool addSubNode(shared_ptr<Node<T>> parent, shared_ptr<Node<T>> child){  // add a child to a parent node.
-                if(parent == nullptr || child == nullptr || parent == child || parent->getChildren().size() >= K){
-                    return false;
+
+                if(parent == nullptr || child == nullptr || parent == child || parent->getChildren().size() >= K) return false;
+
+                // make sure the parent is in the tree using the DFS iterator:
+                for(auto it = beginDFS(); it != endDFS(); ++it){
+                    if(it.operator->() == parent.get()) return parent->addChild(child);
                 }
-                return parent->addChild(child);
+                return false;
             }
 
             // iterators (for the pre/in/post order we will travers the tree using the DFS iterator).
@@ -117,9 +156,27 @@ namespace myTree{
                 return DFSIterator<T>(nullptr);
             }
 
-            // function to render the tree using the SFML library:
-            void render(sf::RenderWindow& window, float x, float y, float xSpacing, float ySpacing){
-                drawTree(this->root, window, x, y, xSpacing, ySpacing);
+            // function to render the tree
+            void renderTree() {
+                sf::RenderWindow window(sf::VideoMode(1200, 700), "Tree Visualization");
+
+                sf::Font font;
+                if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
+                    std::cerr << "Error loading font\n";
+                    return;
+                }
+
+                while (window.isOpen()) {
+                    sf::Event event;
+                    while (window.pollEvent(event)) {
+                        if (event.type == sf::Event::Closed)
+                            window.close();
+                    }
+
+                    window.clear(sf::Color(50, 50, 50));
+                    drawTree(window, root, 800, 10, 200, 100, font);
+                    window.display();
+                }
             }
     };
 
