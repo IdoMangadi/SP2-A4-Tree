@@ -42,6 +42,7 @@ testCounter.o: TestCounter.cpp Complex.hpp
 
 valgrind: tree test
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./Demo 2>&1 | { egrep "lost| at " || true; }
+	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./test 2>&1 | { egrep "lost| at " || true; }
 
 clean:
 	rm -f *.o test Demo tree
