@@ -13,11 +13,15 @@ using namespace std;
 
 namespace myTree{
 
+    // forward declaration of the node:
     template <typename T>
     class Node;
-
+    
     template <typename T>
-    ostream& operator<<(ostream& os, Node<T> node);  // overloading iostram operator for the node:
+    ostream& operator<<(ostream& os, Node<T> node){  // overloading iostram operator for the node.
+        os << node.value;
+        return os;
+    }
 
     /**
      * class representing a node of the tree.
@@ -61,13 +65,7 @@ namespace myTree{
                 return this->value;
             } 
 
-            friend ostream& operator<< <T>(ostream& os, Node<T> node);  // overloading iostram operator for the node.
+            friend ostream& operator<< <T>(ostream& os, Node<T> node);  // declare the function as friend.
     };
-
-    template <typename T>
-    ostream& operator<<(ostream& os, Node<T> node){  // overloading iostram operator for the node.
-        os << node.value;
-        return os;
-    }
 
 } // namespace myTree

@@ -93,12 +93,16 @@ namespace myTree{
             BaseTree() : root(nullptr){}  // constructor.
             BaseTree(shared_ptr<Node<T>> root) : root(root){}  // constructor.
 
+            virtual void pureVirtual() = 0;  // pure virtual function.
+
             ~BaseTree(){}  // destructor.
 
-            virtual void pureVirtual() = 0; // pure virtual function.
-
-            bool addRoot(shared_ptr<Node<T>> root, bool override = false){  // add a root to the tree.
-                if(this->root != nullptr && !override){
+            /**
+             * adding a root to the tree.
+             * param root - the root to add as a shared pointer.
+             */
+            bool addRoot(shared_ptr<Node<T>> root, bool override = false){
+                if(this->root != nullptr && !override){  // if the root already exists and we don't want to override it.
                     return false;
                 }
                 this->root = root;
@@ -109,7 +113,12 @@ namespace myTree{
                 return this->root;
             }
 
-            bool addSubNode(shared_ptr<Node<T>> parent, shared_ptr<Node<T>> child){  // add a child to a parent node.
+            /**
+             * adding a child to a parent node.
+             * param parent - the parent node to add the child to as a shared pointer.
+             * param child - the child node to add as a shared pointer.
+             */
+            bool addSubNode(shared_ptr<Node<T>> parent, shared_ptr<Node<T>> child){
 
                 if(parent == nullptr || child == nullptr || parent == child || parent->getChildren().size() >= K) return false;
 
@@ -121,27 +130,6 @@ namespace myTree{
             }
 
             // iterators (for the pre/in/post order we will travers the tree using the DFS iterator).
-            DFSIterator<T> beginPreorder(){
-                return DFSIterator<T>(this->root);
-            }
-            DFSIterator<T> endPreorder(){
-                return DFSIterator<T>(nullptr);
-            }
-
-            DFSIterator<T> beginInorder(){
-                return DFSIterator<T>(this->root);
-            }
-            DFSIterator<T> endInorder(){
-                return DFSIterator<T>(nullptr);
-            }
-
-            DFSIterator<T> beginPostorder(){
-                return DFSIterator<T>(this->root);
-            }
-            DFSIterator<T> endPostorder(){
-                return DFSIterator<T>(nullptr);
-            }
-
             BFSIterator<T> beginBFS(){
                 return BFSIterator<T>(this->root);
             }
@@ -189,7 +177,29 @@ namespace myTree{
             Tree() : BaseTree<T, K>(){}  // constructor.
             Tree(shared_ptr<Node<T>> root) : BaseTree<T, K>(root){}  // constructor.
 
-            void pureVirtual() override{}  // overriding the pure virtual function.
+            void pureVirtual() override{}  // pure virtual function.
+
+            // iterators (cant use the pre/in/post order iterators).
+            DFSIterator<T> beginPreorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endPreorder(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            DFSIterator<T> beginInorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endInorder(){
+                return DFSIterator<T>(nullptr);
+            }
+
+            DFSIterator<T> beginPostorder(){
+                return DFSIterator<T>(this->root);
+            }
+            DFSIterator<T> endPostorder(){
+                return DFSIterator<T>(nullptr);
+            }
     };
 
     /**
@@ -199,9 +209,9 @@ namespace myTree{
     class Tree<T, 2> : public BaseTree<T, 2>{
         public:
             Tree() : BaseTree<T, 2>(){}  // constructor.
-            Tree(shared_ptr<Node<T>> root) : BaseTree<T, 2>(root){}  // constructor.
+            Tree(shared_ptr<Node<T>> root) : BaseTree<T, 2>(root){}  // constructor with shared pointer.
 
-            void pureVirtual() override{}  // overriding the pure virtual function.
+            void pureVirtual() override{}  // pure virtual function.
 
             // iterators (can use the pre/in/post order iterators).
             PreorderIterator<T> beginPreorder(){
