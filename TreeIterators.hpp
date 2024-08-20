@@ -256,7 +256,7 @@ namespace myTree {
         private:
             
             vector<T> heap;
-            size_t heapSize = 0; // Current position in the heap
+            int heapSize = 0; // Current position in the heap
 
             void buildHeap(shared_ptr<Node<T>> root) {
                 if (!root) return;
