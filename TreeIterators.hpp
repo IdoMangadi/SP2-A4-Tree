@@ -35,16 +35,16 @@ namespace myTree {
             }
 
             PreorderIterator& operator++() {  // increment operator.
-            shared_ptr<Node<T>> node = nodeStack.top();
-            nodeStack.pop();
-            if (!node->getChildren().empty()) {
-                auto& children = node->getChildren();
-                for (auto it = children.rbegin(); it != children.rend(); ++it) {
-                    nodeStack.push(*it);
+                shared_ptr<Node<T>> node = nodeStack.top();
+                nodeStack.pop();
+                if (!node->getChildren().empty()) {
+                    auto& children = node->getChildren();
+                    for (auto it = children.rbegin(); it != children.rend(); ++it) {  // this approach ensures that the left child is processed first
+                        nodeStack.push(*it);
+                    }
                 }
+                return *this;
             }
-            return *this;
-        }
 
             bool operator!=(const PreorderIterator& other) const{  // not equal operator.
                 return this->nodeStack.size() != other.nodeStack.size();
@@ -87,8 +87,8 @@ namespace myTree {
         InorderIterator& operator++() {  // increment operator.
             shared_ptr<Node<T>> node = nodeStack.top();
             nodeStack.pop();
-            if (!node->getChildren().empty() && node->getChildren().size() > 1) {
-                pushLeftChildren(node->getChildren().at(1));
+            if (!node->getChildren().empty() && node->getChildren().size() > 1) {  // If right child exists
+                pushLeftChildren(node->getChildren().at(1));  // Push left children of right child
             }
             return *this;
         }
@@ -256,7 +256,7 @@ namespace myTree {
         private:
             
             vector<T> heap;
-            size_t index = 0; // Current position in the heap
+            size_t heapSize = 0; // Current position in the heap
 
             void buildHeap(shared_ptr<Node<T>> root) {
                 if (!root) return;
@@ -266,8 +266,8 @@ namespace myTree {
                     heap.push_back(*it);
                 }
 
-                make_heap(heap.begin(), heap.end(), less<T>());  // make the heap.
-                sort_heap(heap.begin(), heap.end(), less<T>());  // Sort the heap for consistent iteration.
+                make_heap(heap.begin(), heap.end(), greater<T>());  // Make the heap a min heap
+                heapSize = heap.size();  // Set the heap size to the size of the heap vector
             }
 
         public:
@@ -276,29 +276,33 @@ namespace myTree {
             }
 
             T& operator*() {
-                if (index < heap.size()) {
-                    return heap[index];
+                if (heap.size() > 0) {
+                    return heap.front();
                 }
                 throw std::out_of_range("HeapIterator dereference out of range");
             }
 
             HeapIterator& operator++() {
-                if (index < heap.size()) index++;
+                if (heapSize > 0) {
+                    // Pop the smallest element by moving it to the end and reducing the heap size.
+                    pop_heap(heap.begin(), heap.begin() + heapSize, greater<T>());
+                    heapSize--; // Reduce the heap size, effectively removing the last element
+
+                    // No need to re-heapify explicitly as pop_heap already does that.
+                }
                 return *this;
             }
 
             bool operator!=(const HeapIterator& other) const{
-                // Since we're comparing to the end iterator, which has a nullptr root,
-                // we can simply check if the current index is at the end of the heap vector.
-                return index != heap.size();
+                return heapSize != 0;
             }
 
             // Assuming end iterator is created with a default constructor or nullptr root
-            HeapIterator() : index(0) {}
+            HeapIterator() : heapSize(0) {}
 
             // Helper function to set index for the end iterator
             void setToEnd() {
-                index = heap.size();
+                heapSize = 0;
             }
     };
     

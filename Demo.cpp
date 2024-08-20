@@ -40,7 +40,7 @@ int main(){
     tree.addSubNode(leftLeftChild, leftLeftLeftChild);
     tree.addSubNode(leftLeftChild, leftLeftRightChild);
 
-    // tree.renderTree();
+    tree.renderTree();
 
     cout << "Preorder traversal:" << endl;  // should print: 1 2 4 8 9 5 3 6 7
     for(auto it = tree.beginPreorder(); it != tree.endPreorder(); ++it){
@@ -109,7 +109,7 @@ int main(){
     tree3.addSubNode(rightChild3, rightMiddleChild3);
     tree3.addSubNode(rightChild3, rightRightChild3);
 
-    // tree3.renderTree();
+    tree3.renderTree();
 
     cout << "Preorder traversal:" << endl;  // should print: 1 2 5 6 7 3 8 9 10 4 11 12 13
     for(auto it = tree3.beginPreorder(); it != tree3.endPreorder(); ++it){
@@ -226,7 +226,7 @@ int main(){
     treeComplex.addSubNode(leftLeftChildComplex, leftLeftLeftChildComplex);
     treeComplex.addSubNode(leftLeftChildComplex, leftLeftRightChildComplex);
 
-    // treeComplex.renderTree();
+    treeComplex.renderTree();
 
     cout << "Preorder traversal:" << endl;  // should print: 1 + 2i 3 + 4i 7 + 8i 15 + 16i 17 + 18i 9 + 10i 5 + 6i 11 + 12i 13 + 14i
     for(auto it = treeComplex.beginPreorder(); it != treeComplex.endPreorder(); ++it){
@@ -280,7 +280,7 @@ int main(){
     treeString.addSubNode(leftLeftChildString, leftLeftLeftChildString);
     treeString.addSubNode(leftLeftChildString, leftLeftRightChildString);
 
-    // treeString.renderTree();
+    treeString.renderTree();
 
     cout << "Preorder traversal:" << endl;  // should print: 1 2 4 8 9 5 3 6 7
     for(auto it = treeString.beginPreorder(); it != treeString.endPreorder(); ++it){
