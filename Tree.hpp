@@ -242,7 +242,7 @@ namespace myTree{
             }
             HeapIterator<T> endHeap(){
                 HeapIterator<T> it;
-                it.setToEnd();
+                // it.setToEnd();
                 return it;
             }
     };

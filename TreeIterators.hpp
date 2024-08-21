@@ -294,16 +294,16 @@ namespace myTree {
             }
 
             bool operator!=(const HeapIterator& other) const{
-                return heapSize != 0;
+                return heapSize != other.heapSize;
             }
 
             // Assuming end iterator is created with a default constructor or nullptr root
             HeapIterator() : heapSize(0) {}
 
             // Helper function to set index for the end iterator
-            void setToEnd() {
-                heapSize = 0;
-            }
+            // void setToEnd() {
+            //     heapSize = 0;
+            // }
     };
     
 
